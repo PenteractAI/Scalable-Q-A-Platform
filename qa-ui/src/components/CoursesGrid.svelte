@@ -1,0 +1,30 @@
+<script>
+
+    import CourseCard from "./CourseCard.svelte";
+
+    let promise;
+
+    const getCourses = async ()  => {
+        const response = await fetch("/api/courses", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        return await response.json();
+    }
+
+    promise = getCourses();
+
+</script>
+
+{#await promise}
+    <p>Loading courses...</p>
+{:then courses}
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {#each courses as course}
+            <CourseCard bind:course/>
+        {/each}
+    </div>
+{/await}

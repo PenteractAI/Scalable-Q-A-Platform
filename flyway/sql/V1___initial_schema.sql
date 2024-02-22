@@ -1,6 +1,6 @@
 CREATE TABLE courses (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(200) NOT NULL,
+    title VARCHAR(200) UNIQUE NOT NULL,
     description TEXT NOT NULL
 );
 
