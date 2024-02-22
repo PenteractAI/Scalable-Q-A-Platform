@@ -1,11 +1,12 @@
 ---
 import Layout from "../layout/Layout.astro";
 import CourseDetails from "../components/CourseDetails.svelte";
+import QuestionsList from "../components/QuestionsList.svelte";
 
-const { id } = Astro.params.id;
+const { courseId } = Astro.params;
 ---
 
 <Layout>
     <!--<CourseDetails />-->
-    <QuestionsList
+    <QuestionsList courseId={courseId} client:only={"svelte"} />
 </Layout>

@@ -2,8 +2,6 @@
 
     import CourseCard from "./CourseCard.svelte";
 
-    let promise;
-
     const getCourses = async ()  => {
         const response = await fetch("/api/courses", {
             method: "GET",
@@ -15,8 +13,7 @@
         return await response.json();
     }
 
-    promise = getCourses();
-
+    let promise = getCourses();
 </script>
 
 {#await promise}
