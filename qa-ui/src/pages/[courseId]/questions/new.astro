@@ -1,0 +1,10 @@
+---
+import NewQuestionForm from "../../../components/Questions/NewQuestionForm.svelte";
+import Layout from "../../../layout/Layout.astro";
+
+const { courseId } = Astro.params;
+---
+
+<Layout>
+    <NewQuestionForm client:load={"svelte"} courseId={courseId} />
+</Layout>
