@@ -1,5 +1,14 @@
 import * as questionService from "../services/questionService.js";
 
+export const handleGetQuestion = async (request, urlPatternResult) => {
+    const questionId = urlPatternResult.pathname.groups.questionId;
+    const question = await questionService.findById(questionId);
+
+    console.log(`Question with id ${questionId} retrieved from the database`);
+
+    return Response.json(question, { status: 200 });
+}
+
 /**
  * Handler for retrieving all questions for a course
  *

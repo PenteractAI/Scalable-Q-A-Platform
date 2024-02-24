@@ -1,6 +1,11 @@
-import { handleGetQuestions, handleCreateQuestion } from "../handlers/questionHandlers.js";
+import { handleGetQuestion, handleGetQuestions, handleCreateQuestion } from "../handlers/questionHandlers.js";
 
 export const questionRoutes = [
+    {
+        method: "GET",
+        pattern: new URLPattern({ pathname: "/courses/:courseId/questions/:questionId"}),
+        fn: handleGetQuestion
+    },
     {
         method: "GET",
         pattern: new URLPattern({ pathname: "/courses/:courseId/questions" }),

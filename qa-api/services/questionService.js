@@ -2,6 +2,25 @@ import { sql } from "../database/database.js";
 import { toCamelCase } from "../utils/objectKeyTransforms.js";
 
 /**
+ * Find a question by its ID
+ *
+ * @param id
+ * @returns {Promise<Object|Array>}
+ */
+export const findById = async (id) => {
+    const results = await sql`
+        SELECT
+            id, course_id, user_uuid, title, content, creation_time, upvote_count, last_upvote_time
+        FROM
+            questions
+        WHERE
+            id = ${id}
+    `;
+
+    return toCamelCase(results[0]);
+}
+
+/**
  * Finds all questions for a course
  *
  * @returns {Promise<Object|Array>}
