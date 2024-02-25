@@ -3,7 +3,7 @@ import { toCamelCase } from "../utils/objectKeyTransforms.js";
 
 
 /**
- * Returns 20 answers for a question
+ * Returns 20 answers for a question ordered by recency
  *
  * @param questionId
  * @returns {Promise<Object|Array>}
@@ -16,6 +16,8 @@ export const findAllByQuestionId = async (questionId) => {
             answers
         WHERE
             question_id = ${questionId}
+        ORDER BY
+            GREATEST(creation_time, last_upvote_time) DESC
         LIMIT 20;
     `;
 

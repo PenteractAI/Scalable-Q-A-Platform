@@ -21,7 +21,7 @@ export const findById = async (id) => {
 }
 
 /**
- * Finds 20 questions for a course
+ * Finds 20 questions for a course ordered by recency
  *
  * @returns {Promise<Object|Array>}
  */
@@ -33,6 +33,8 @@ export const findAllByCourseId = async (courseId) => {
             questions
         WHERE
             course_id = ${courseId}
+        ORDER BY
+            GREATEST(creation_time, last_upvote_time) DESC
         LIMIT 20
     `;
 
@@ -73,7 +75,8 @@ export const upvoteQuestion = async (id) => {
         UPDATE
             questions
         SET
-            upvote_count = upvote_count + 1
+            upvote_count = upvote_count + 1,
+            last_upvote_time = CURRENT_TIMESTAMP
         WHERE
             id = ${id}
         RETURNING 

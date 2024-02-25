@@ -11,8 +11,8 @@ CREATE TABLE questions (
     title VARCHAR(200) NULL,
     content TEXT NOT NULL,
     creation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    upvote_count INT DEFAULT 0,
-    last_upvote_time TIMESTAMP NULL
+    upvote_count INT DEFAULT 0 NOT NULL,
+    last_upvote_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE answers (
@@ -21,8 +21,8 @@ CREATE TABLE answers (
     user_uuid UUID NOT NULL,
     content TEXT NOT NULL,
     creation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    upvote_count INT DEFAULT 0,
-    last_upvote_time TIMESTAMP NULL
+    upvote_count INT DEFAULT 0 NOT NULL,
+    last_upvote_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE question_votes (
