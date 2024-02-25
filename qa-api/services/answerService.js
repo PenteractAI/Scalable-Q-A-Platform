@@ -3,7 +3,7 @@ import { toCamelCase } from "../utils/objectKeyTransforms.js";
 
 
 /**
- * Returns all answers for a question
+ * Returns 20 answers for a question
  *
  * @param questionId
  * @returns {Promise<Object|Array>}
@@ -16,6 +16,7 @@ export const findAllByQuestionId = async (questionId) => {
             answers
         WHERE
             question_id = ${questionId}
+        LIMIT 20;
     `;
 
     return toCamelCase(results);

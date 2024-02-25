@@ -3,6 +3,7 @@ import * as questionService from "../services/questionService.js";
 export const handleGetQuestion = async (request, urlPatternResult) => {
     const questionId = urlPatternResult.pathname.groups.questionId;
     const question = await questionService.findById(questionId);
+    console.log(question);
 
     console.log(`Question with id ${questionId} retrieved from the database`);
 

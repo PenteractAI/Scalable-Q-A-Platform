@@ -21,7 +21,7 @@ export const findById = async (id) => {
 }
 
 /**
- * Finds all questions for a course
+ * Finds 20 questions for a course
  *
  * @returns {Promise<Object|Array>}
  */
@@ -33,6 +33,7 @@ export const findAllByCourseId = async (courseId) => {
             questions
         WHERE
             course_id = ${courseId}
+        LIMIT 20
     `;
 
     return toCamelCase(results);
