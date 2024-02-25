@@ -54,7 +54,29 @@ export const createQuestion = async (courseId, userUuid, title, content) => {
         VALUES 
             (${courseId}, ${userUuid}, ${title}, ${content})
         RETURNING
-            id, course_id, user_uuid, title, content, creation_time
+            id, course_id, user_uuid, title, content, creation_time, upvote_count, last_upvote_time
+    `;
+
+    return toCamelCase(results[0]);
+}
+
+/**
+ * Increment the upvote count of a question by one
+ *
+ * @param id
+ * @param userUuid
+ * @returns {Promise<Object|Array>}
+ */
+export const upvoteQuestion = async (id) => {
+    const results = await sql`
+        UPDATE
+            questions
+        SET
+            upvote_count = upvote_count + 1
+        WHERE
+            id = ${id}
+        RETURNING 
+            id
     `;
 
     return toCamelCase(results[0]);

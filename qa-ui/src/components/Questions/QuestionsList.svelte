@@ -22,7 +22,7 @@
 {:then questions}
     <div class="flex flex-col gap-0 md:gap-6 lg:mx-40">
         {#each questions as question}
-            <QuestionCard bind:question/>
+            <QuestionCard courseId={courseId} bind:question/>
         {/each}
     </div>
 {/await}

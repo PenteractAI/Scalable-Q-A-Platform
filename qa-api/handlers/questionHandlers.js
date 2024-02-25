@@ -66,3 +66,21 @@ export const handleCreateQuestion = async (request) => {
         return Response.json({ error: 'Failed to create question' }, { status: 500 });
     }
 }
+
+/**
+ * Handler for upvoting a question
+ *
+ * @param request
+ * @param urlPatternResult
+ * @returns {Promise<Response>}
+ */
+export const handleUpvoteQuestion = async (request, urlPatternResult) => {
+    const questionId = urlPatternResult.pathname.groups.questionId;
+    const { userUuid } = await request.json();
+
+    const question = await questionService.upvoteQuestion(Number(questionId));
+
+    console.log(`Question ${questionId} upvoted by user ${userUuid}`);
+
+    return Response.json(question, { status: 200 });
+}

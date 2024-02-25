@@ -1,4 +1,9 @@
-import { handleGetQuestion, handleGetQuestions, handleCreateQuestion } from "../handlers/questionHandlers.js";
+import {
+    handleGetQuestion,
+    handleGetQuestions,
+    handleCreateQuestion,
+    handleUpvoteQuestion
+} from "../handlers/questionHandlers.js";
 
 export const questionRoutes = [
     {
@@ -15,5 +20,10 @@ export const questionRoutes = [
         method: "POST",
         pattern: new URLPattern({ pathname: "/courses/:courseId/questions" }),
         fn: handleCreateQuestion
+    },
+    {
+        method: "PUT",
+        pattern: new URLPattern({ pathname: "/courses/:courseId/questions/:questionId/upvote"}),
+        fn: handleUpvoteQuestion
     }
 ];
