@@ -1,8 +1,9 @@
 import { serve } from "./deps.js";
 import { courseRoutes } from "./routes/courseRoutes.js";
 import { questionRoutes } from "./routes/questionRoutes.js";
+import { answerRoutes } from "./routes/answerRoutes.js";
 
-const router = [...courseRoutes, ...questionRoutes];
+const router = [...courseRoutes, ...questionRoutes, ...answerRoutes];
 
 /**
  * Handles the incoming request and routes it to the appropriate function based on the URL mapping.

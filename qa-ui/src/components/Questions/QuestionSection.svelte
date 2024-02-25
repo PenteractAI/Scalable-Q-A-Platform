@@ -22,15 +22,17 @@
 {#await promise}
     <p>Loading question...</p>
 {:then question}
-    <div class="flex flex-col gap-4 lg:mx-40 font-sans px-6 py-8 bg-white border border-gray-200">
-        <div class="flex justify-between py-6">
+    <div class="bg-gradient-to-tr from-white to-gray-100 border border-gray-200 shadow overflow-hidden rounded-none px-8 py-6 md:rounded-lg lg:mx-40">
+        <div class="flex justify-between border-b border-gray-200">
             <QuestionUpvoteButton courseId={courseId} questionId={ questionId } upvoteCount={ question.upvoteCount } />
-            <div>
+            <div class="flex justify-between">
                 <span class="inline-block font-sans text-sm text-base text-gray-700 mr-2">{ question.userUuid }</span>
                 <span class="inline-block font-sans text-sm text-base text-gray-500">asked { toRelativeTime(question.creationTime) }</span>
             </div>
         </div>
-        <h2 class="text-2xl font-semibold leading-7 text-black">{ question.title }</h2>
-        <p>{ question.content }</p>
+        <div class="inline-block py-6">
+            <div class="font-sans font-medium text-xl mb-2">{ question.title }</div>
+            <p class="font-sans text-base text-gray-500">{ question.content }</p>
+        </div>
     </div>
 {/await}

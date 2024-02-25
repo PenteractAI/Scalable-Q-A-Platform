@@ -22,14 +22,12 @@
     }
 </script>
 
-<div class="flex font-mono text-sm rounded text-semibold">
+<div class="flex font-mono text-xs rounded text-semibold">
     <button on:click={upvote}
-            class="bg-cerise-red-400 inline-block text-white p-2"
-    >
-        <span>Upvote</span>
-    </button>
+            class="bg-cerise-red-400 text-white p-2"
+    >Upvote</button>
     <div class="bg-cerise-red-100">
-        <span class="inline-block text-base text-gray-700 p-2">{ upvoteCount }</span>
+        <div class="text-gray-700 p-2">{ upvoteCount }</div>
     </div>
 
 </div>

@@ -78,7 +78,7 @@ export const handleUpvoteQuestion = async (request, urlPatternResult) => {
     const questionId = urlPatternResult.pathname.groups.questionId;
     const { userUuid } = await request.json();
 
-    const question = await questionService.upvoteQuestion(Number(questionId));
+    const question = await questionService.upvoteQuestion(questionId);
 
     console.log(`Question ${questionId} upvoted by user ${userUuid}`);
 
