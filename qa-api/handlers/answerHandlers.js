@@ -9,7 +9,9 @@ import * as answerService from '../services/answerService.js';
  */
 export const handleGetAnswers = async (request, urlPatternResult) => {
     const questionId = urlPatternResult.pathname.groups.questionId;
-    const answers = await answerService.findAllByQuestionId(questionId);
+    const userUuid = request.headers.get('User-UUID');
+
+    const answers = await answerService.findAllByQuestionId(questionId, userUuid);
 
     console.log(`Answers retrieved from the database for question ${questionId}`);
 
@@ -60,6 +62,18 @@ export const handleCreateAnswer = async (request) => {
 export const handleUpvoteAnswer = async (request, urlPatternResult) => {
     const answerId = urlPatternResult.pathname.groups.answerId;
     const { userUuid } = await request.json();
+
+    // Insert a log for the user that upvote the answer
+    const answerUpvoteLog = await answerService.createUpvoteLog(answerId, userUuid);
+
+    // If the insert does not return any value, it means that the upvote has already been created
+    if (answerUpvoteLog === undefined) {
+        console.warn(`Answer ${answerId} already upvoted by user ${userUuid}`);
+
+        // Even if the right status code would be "409", we send a 200 (OK) code to avoid the error to be automatically
+        // handled by the browser
+        return Response.json({ error: 'The user has already upvoted the answer.' }, { status: 200 });
+    }
 
     const answer = await answerService.upvoteAnswer(answerId);
 

@@ -10,7 +10,7 @@
         <p class="font-sans text-base text-gray-500">{ answer.content }</p>
     </div>
     <div class="flex justify-between py-6">
-        <UpvoteButton type="answer" id={answer.id} upvoteCount={answer.upvoteCount} />
+        <UpvoteButton type="answer" id={answer.id} upvoteCount={answer.upvoteCount} userHasUpvoted={answer.userHasUpvoted} />
         <div>
             <span class="inline-block font-sans text-sm text-base text-gray-700 mr-2">{ answer.userUuid }</span>
             <span class="inline-block font-sans text-sm text-base text-gray-500">answered { toRelativeTime(answer.creationTime) }</span>

@@ -1,5 +1,6 @@
 <script>
     import AnswerCard from "./AnswerCard.svelte";
+    import {userUuid} from "../../stores/stores.js";
 
     export let questionId;
 
@@ -8,6 +9,7 @@
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "User-UUID": $userUuid
             }
         });
 

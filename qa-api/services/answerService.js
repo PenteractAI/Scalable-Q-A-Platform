@@ -3,17 +3,27 @@ import { toCamelCase } from "../utils/objectKeyTransforms.js";
 
 
 /**
- * Returns 20 answers for a question ordered by recency
+ * Returns 20 answers for a question ordered by recency, including whether the user has upvoted them
  *
  * @param questionId
  * @returns {Promise<Object|Array>}
  */
-export const findAllByQuestionId = async (questionId) => {
+export const findAllByQuestionId = async (questionId, userUuid) => {
     const results = await sql`
         SELECT 
-            id, question_id, user_uuid, content, creation_time, upvote_count, last_upvote_time
+           a. id, 
+           a.question_id, 
+           a.user_uuid, 
+           a.content, 
+           a.creation_time, 
+           a.upvote_count, 
+           a.last_upvote_time,
+           (av.user_uuid IS NOT NULL) AS user_has_upvoted
         FROM
-            answers
+            answers AS a
+        LEFT JOIN
+            answer_votes AS av ON a.id = av.id
+            AND av.user_uuid = ${userUuid}
         WHERE
             question_id = ${questionId}
         ORDER BY
@@ -63,6 +73,28 @@ export const upvoteAnswer = async (id) => {
             id = ${id}
         RETURNING 
             id
+    `;
+
+    return toCamelCase(results[0]);
+}
+
+/**
+ * Create a log for an upvote made by an user
+ *
+ * @param id
+ * @param userUuid
+ * @returns {Promise<Object|Array>}
+ */
+export const createUpvoteLog = async (id, userUuid) => {
+    const results = await sql`
+        INSERT INTO
+            answer_votes (id, user_uuid)
+        VALUES
+            (${id}, ${userUuid})
+        ON CONFLICT (id, user_uuid)
+            DO NOTHING
+        RETURNING 
+            id, user_uuid, upvote_time
     `;
 
     return toCamelCase(results[0]);

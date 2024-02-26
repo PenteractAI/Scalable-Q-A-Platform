@@ -20,7 +20,6 @@ export const handleGetQuestions = async (request, urlPatternResult) => {
     const courseId = urlPatternResult.pathname.groups.courseId;
     const userUuid = request.headers.get('User-UUID');
 
-    console.log(userUuid);
     const questions = await questionService.findAllByCourseId(courseId, userUuid);
 
     console.log(`Questions retrieved from the database for course ${courseId}`);
