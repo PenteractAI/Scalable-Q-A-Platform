@@ -1,4 +1,5 @@
 import * as questionService from "../services/questionService.js";
+import {createAnswer} from "../services/answerService.js";
 
 export const handleGetQuestion = async (request, urlPatternResult) => {
     const questionId = urlPatternResult.pathname.groups.questionId;
@@ -39,6 +40,9 @@ export const handleCreateQuestion = async (request) => {
 
         const MAX_TITLE_LENGTH = 200;
 
+        /**
+         * Step 1. Check the validity of the question
+         */
         const isEmptyString = (str) => {
             return str === null || str === undefined || str.trim() === ''
         }
@@ -55,17 +59,48 @@ export const handleCreateQuestion = async (request) => {
             return Response.json({ error: 'The content field is empty.'}, { status: 400 });
         }
 
-        // Store the question in the database
+        /**
+         * Step 2. Store the question in the database
+         */
         const newQuestion = await questionService.createQuestion(Number(courseId), userUuid, title, content);
 
         console.log(`Question ${newQuestion.id} created and stored in the database for course ${newQuestion.courseId}`);
 
-        // Indicates that a new resource was created and send the new question
+        /**
+         * Step 3. Call the LLM API for generating three asynchronously
+         */
+        generateAnswers(newQuestion.id, newQuestion.title);
+
+        /**
+         * Step 4. Return the answer to the front
+         */
         return Response.json(newQuestion, { status: 201 });
     } catch (error) {
         console.error(`Failed to create question: ${error}`);
 
         return Response.json({ error: 'Failed to create question' }, { status: 500 });
+    }
+}
+
+const generateAnswers = async (questionId, title) => {
+    const MAX_GENERATED_ANSWERS = 3;
+    for (let i = 0; i < MAX_GENERATED_ANSWERS; i++) {
+        const response = await fetch("http://llm-api:7000/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                question: title
+            })
+        });
+
+        const data = await response.json();
+
+        // Store the question in the database
+        const newAnswer = await createAnswer(questionId, "Doctor Robotnik", data[0].generated_text);
+
+        console.log(`Answer ${newAnswer.id} created and stored in the database for question ${questionId}`);
     }
 }
 

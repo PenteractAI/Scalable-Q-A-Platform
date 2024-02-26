@@ -5,7 +5,7 @@
     export let answer;
 </script>
 
-<div class="bg-gradient-to-tr from-white to-gray-100 border border-gray-200 shadow overflow-hidden rounded-none px-8 md:rounded-lg">
+<div class="bg-gradient-to-tr from-white {answer.userUuid === 'Doctor Robotnik' ? 'to-blue-100 border-blue-200 shadow-blue-400' : 'to-gray-100 border border-gray-200'} shadow overflow-hidden rounded-none px-8 md:rounded-lg">
     <div class="inline-block border-b border-gray-200 py-6">
         <p class="font-sans text-base text-gray-500">{ answer.content }</p>
     </div>
