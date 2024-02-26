@@ -1,10 +1,10 @@
 <script>
     import AnswerCard from "./AnswerCard.svelte";
 
-    export let courseId, questionId;
+    export let questionId;
 
     const getAnswers = async () => {
-        const response = await fetch(`/api/courses/${courseId}/questions/${questionId}/answers`, {
+        const response = await fetch(`/api/questions/${questionId}/answers`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -22,7 +22,7 @@
 {:then answers}
     <div class="flex flex-col py-8 gap-0 md:gap-4 lg:mx-40">
         {#each answers as answer}
-            <AnswerCard courseId={courseId} questionId={questionId} bind:answer/>
+            <AnswerCard questionId={questionId} bind:answer/>
         {/each}
     </div>
 {/await}

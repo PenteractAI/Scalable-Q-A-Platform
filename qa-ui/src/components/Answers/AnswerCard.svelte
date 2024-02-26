@@ -2,7 +2,7 @@
     import { toRelativeTime } from "../../utils/dateUtils.js";
     import UpvoteButton from "../UpvoteButton.svelte";
 
-    export let answer, courseId;
+    export let answer;
 </script>
 
 <div class="bg-gradient-to-tr from-white to-gray-100 border border-gray-200 shadow overflow-hidden rounded-none px-8 md:rounded-lg">

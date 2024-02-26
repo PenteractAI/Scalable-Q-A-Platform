@@ -1,6 +1,7 @@
 <script>
     import { toRelativeTime } from "../../utils/dateUtils.js";
     import UpvoteButton from "../UpvoteButton.svelte";
+    import NewAnswerForm from "../Answers/NewAnswerForm.svelte";
 
     export let questionId, courseId;
 
@@ -30,9 +31,10 @@
                 <span class="inline-block font-sans text-sm text-base text-gray-500">asked { toRelativeTime(question.creationTime) }</span>
             </div>
         </div>
-        <div class="inline-block py-6">
+        <div class="inline-block py-6 border-b border-gray-200">
             <div class="font-sans font-medium text-xl mb-2">{ question.title }</div>
             <p class="font-sans text-base text-gray-500">{ question.content }</p>
         </div>
+        <NewAnswerForm questionId={questionId} />
     </div>
 {/await}

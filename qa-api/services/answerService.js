@@ -25,6 +25,27 @@ export const findAllByQuestionId = async (questionId) => {
 }
 
 /**
+ * Create a new answer for a question
+ *
+ * @param questionId
+ * @param userUuid
+ * @param content
+ * @returns {Promise<Object|Array>}
+ */
+export const createAnswer = async (questionId, userUuid, content) => {
+    const results = await sql`
+        INSERT INTO
+            answers (question_id, user_uuid, content)
+        VALUES 
+            (${questionId}, ${userUuid}, ${content})
+        RETURNING
+            id, question_id, user_uuid, content, creation_time, upvote_count, last_upvote_time
+    `;
+
+    return toCamelCase(results[0]);
+}
+
+/**
  * Increment the upvote count of an anwser by one
  *
  * @param id

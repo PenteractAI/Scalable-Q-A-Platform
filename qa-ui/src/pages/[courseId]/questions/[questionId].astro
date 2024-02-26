@@ -8,5 +8,5 @@ const { courseId, questionId } = Astro.params;
 ---
 <Layout>
     <QuestionSection questionId={questionId} courseId={courseId} client:only={"svelte"} />
-    <AnswersList questionId={questionId} courseId={courseId} client:only={"svelte"} />
+    <AnswersList questionId={questionId} client:only={"svelte"} />
 </Layout>

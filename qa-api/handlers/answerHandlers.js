@@ -17,6 +17,40 @@ export const handleGetAnswers = async (request, urlPatternResult) => {
 }
 
 /**
+ * Handler for creating a new answer for a question
+ *
+ * @param request
+ * @returns {Promise<Response>}
+ */
+export const handleCreateAnswer = async (request) => {
+    try {
+        const { questionId, userUuid, content } = await request.json();
+
+        const isEmptyString = (str) => {
+            return str === null || str === undefined || str.trim() === ''
+        }
+
+        // Check the content is not empty
+        if (isEmptyString(content)) {
+            return Response.json({ error: 'The content field is empty.'}, { status: 400 });
+        }
+
+        // Store the question in the database
+        const newAnswer = await answerService.createAnswer(questionId, userUuid, content);
+
+        console.log(`Answer ${newAnswer.id} created and stored in the database for question ${questionId}`);
+
+        // Indicates that a new resource was created and send the new question
+        return Response.json(newAnswer, { status: 201 });
+    } catch (error) {
+        console.error(`Failed to create answer: ${error}`);
+
+        return Response.json({ error: 'Failed to create answer' }, { status: 500 });
+    }
+}
+
+
+/**
  * Handler for upvoting an answer
  *
  * @param request

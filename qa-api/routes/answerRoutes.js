@@ -1,10 +1,15 @@
-import { handleGetAnswers, handleUpvoteAnswer } from "../handlers/answerHandlers.js";
+import { handleGetAnswers, handleUpvoteAnswer, handleCreateAnswer } from "../handlers/answerHandlers.js";;
 
 export const answerRoutes = [
     {
         method: "GET",
-        pattern: new URLPattern({ pathname: "/courses/:courseId/questions/:questionId/answers"}),
+        pattern: new URLPattern({ pathname: "/questions/:questionId/answers"}),
         fn: handleGetAnswers,
+    },
+    {
+        method: "POST",
+        pattern: new URLPattern({ pathname: "/questions/:questionId/answers" }),
+        fn: handleCreateAnswer
     },
     {
         method: "PUT",
