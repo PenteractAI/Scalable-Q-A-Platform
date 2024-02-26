@@ -21,16 +21,27 @@ export const findById = async (id) => {
 }
 
 /**
- * Finds 20 questions for a course ordered by recency
+ * Finds 20 questions for a course ordered by recency, including whether the user has upvoted them
  *
  * @returns {Promise<Object|Array>}
  */
-export const findAllByCourseId = async (courseId) => {
+export const findAllByCourseId = async (courseId, userUuid) => {
     const results = await sql`
         SELECT
-            id, course_id, user_uuid, title, content, creation_time, upvote_count, last_upvote_time
+            q.id, 
+            q.course_id, 
+            q.user_uuid, 
+            q.title, 
+            q.content, 
+            q.creation_time, 
+            q.upvote_count, 
+            q.last_upvote_time,
+            (qv.user_uuid IS NOT NULL) AS user_has_upvoted
         FROM
-            questions
+            questions as q
+        LEFT JOIN
+            question_votes as qv ON q.id = qv.id 
+            AND qv.user_uuid = ${userUuid}
         WHERE
             course_id = ${courseId}
         ORDER BY
@@ -81,6 +92,28 @@ export const upvoteQuestion = async (id) => {
             id = ${id}
         RETURNING 
             id
+    `;
+
+    return toCamelCase(results[0]);
+}
+
+/**
+ * Create a log for an upvote made by an user
+ *
+ * @param id
+ * @param userUuid
+ * @returns {Promise<Object|Array>}
+ */
+export const createUpvoteLog = async (id, userUuid) => {
+    const results = await sql`
+        INSERT INTO
+            question_votes (id, user_uuid)
+        VALUES
+            (${id}, ${userUuid})
+        ON CONFLICT (id, user_uuid)
+            DO NOTHING
+        RETURNING 
+            id, user_uuid, upvote_time
     `;
 
     return toCamelCase(results[0]);

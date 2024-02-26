@@ -18,7 +18,10 @@ export const handleGetQuestion = async (request, urlPatternResult) => {
  */
 export const handleGetQuestions = async (request, urlPatternResult) => {
     const courseId = urlPatternResult.pathname.groups.courseId;
-    const questions = await questionService.findAllByCourseId(courseId);
+    const userUuid = request.headers.get('User-UUID');
+
+    console.log(userUuid);
+    const questions = await questionService.findAllByCourseId(courseId, userUuid);
 
     console.log(`Questions retrieved from the database for course ${courseId}`);
 
@@ -77,6 +80,18 @@ export const handleCreateQuestion = async (request) => {
 export const handleUpvoteQuestion = async (request, urlPatternResult) => {
     const questionId = urlPatternResult.pathname.groups.questionId;
     const { userUuid } = await request.json();
+
+    // Insert a log for the user that upvote the question
+    const questionUpvoteLog  = await questionService.createUpvoteLog(questionId, userUuid);
+
+    // If the insert does not return any value, it means that the upvote has already been created
+    if (questionUpvoteLog === undefined) {
+        console.warn(`Question ${questionId} already upvoted by user ${userUuid}`);
+
+        // Even if the right status code would be "409", we send a 200 (OK) code to avoid the error to be automatically
+        // handled by the browser
+        return Response.json({ error: 'The user has already upvoted the question.' }, { status: 200 });
+    }
 
     const question = await questionService.upvoteQuestion(questionId);
 
