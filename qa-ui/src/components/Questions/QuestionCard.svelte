@@ -1,6 +1,6 @@
 <script>
     import { toRelativeTime } from "../../utils/dateUtils.js";
-    import QuestionUpvoteButton from "./QuestionUpvoteButton.svelte";
+    import UpvoteButton from "../UpvoteButton.svelte";
 
     export let question, courseId;
 </script>
@@ -13,7 +13,7 @@
         <p class="font-sans text-base text-gray-500">{ question.content }</p>
     </a>
     <div class="flex justify-between py-6">
-        <QuestionUpvoteButton courseId={courseId} questionId={ question.id } upvoteCount={ question.upvoteCount } />
+        <UpvoteButton type="question" id={question.id} upvoteCount={question.upvoteCount} />
         <div>
             <span class="inline-block font-sans text-sm text-base text-gray-700 mr-2">{ question.userUuid }</span>
             <span class="inline-block font-sans text-sm text-base text-gray-500">asked { toRelativeTime(question.creationTime) }</span>

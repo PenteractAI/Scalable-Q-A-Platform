@@ -1,8 +1,8 @@
 <script>
     import { toRelativeTime } from "../../utils/dateUtils.js";
-    // import QuestionUpvoteButton from "./QuestionUpvoteButton.svelte";
+    import UpvoteButton from "../UpvoteButton.svelte";
 
-    export let answer, courseId, questionId;
+    export let answer, courseId;
 </script>
 
 <div class="bg-gradient-to-tr from-white to-gray-100 border border-gray-200 shadow overflow-hidden rounded-none px-8 md:rounded-lg">
@@ -10,7 +10,7 @@
         <p class="font-sans text-base text-gray-500">{ answer.content }</p>
     </div>
     <div class="flex justify-between py-6">
-<!--        <QuestionUpvoteButton courseId={courseId} questionId={ answer.id } upvoteCount={ answer.upvoteCount } />-->
+        <UpvoteButton type="answer" id={answer.id} upvoteCount={answer.upvoteCount} />
         <div>
             <span class="inline-block font-sans text-sm text-base text-gray-700 mr-2">{ answer.userUuid }</span>
             <span class="inline-block font-sans text-sm text-base text-gray-500">answered { toRelativeTime(answer.creationTime) }</span>

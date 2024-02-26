@@ -1,6 +1,6 @@
 <script>
-    import {userUuid} from "../../stores/stores.js";
-    export let upvoteCount, questionId, courseId;
+    import {userUuid} from "../stores/stores.js";
+    export let upvoteCount, id, type;
 
     const upvote = async () => {
 
@@ -10,7 +10,7 @@
             userUuid: $userUuid
         }
 
-        const response = await fetch(`/api/courses/${courseId}/questions/${questionId}/upvote`, {
+        const response = await fetch(`/api/${type}s/${id}/upvote`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -29,5 +29,4 @@
     <div class="bg-cerise-red-100">
         <div class="text-gray-700 p-2">{ upvoteCount }</div>
     </div>
-
 </div>

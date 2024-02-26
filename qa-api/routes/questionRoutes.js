@@ -23,7 +23,7 @@ export const questionRoutes = [
     },
     {
         method: "PUT",
-        pattern: new URLPattern({ pathname: "/courses/:courseId/questions/:questionId/upvote"}),
+        pattern: new URLPattern({ pathname: "/questions/:questionId/upvote"}),
         fn: handleUpvoteQuestion
     }
 ];
