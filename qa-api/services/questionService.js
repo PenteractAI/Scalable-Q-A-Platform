@@ -2,19 +2,30 @@ import { sql } from "../database/database.js";
 import { toCamelCase } from "../utils/objectKeyTransforms.js";
 
 /**
- * Find a question by its ID
+ * Find a question by its ID, including whether the user has upvoted it
  *
  * @param id
  * @returns {Promise<Object|Array>}
  */
-export const findById = async (id) => {
+export const findById = async (id, userUuid) => {
     const results = await sql`
         SELECT
-            id, course_id, user_uuid, title, content, creation_time, upvote_count, last_upvote_time
+            q.id,
+            q.course_id,
+            q.user_uuid,
+            q.title,
+            q.content,
+            q.creation_time,
+            q.upvote_count,
+            q.last_upvote_time,
+            (qv.user_uuid IS NOT NULL) AS user_has_upvoted
         FROM
-            questions
+            questions as q
+        LEFT JOIN
+            question_votes as qv ON q.id = qv.id
+            AND qv.user_uuid = ${userUuid}
         WHERE
-            id = ${id}
+            q.id = ${id}
     `;
 
     return toCamelCase(results[0]);

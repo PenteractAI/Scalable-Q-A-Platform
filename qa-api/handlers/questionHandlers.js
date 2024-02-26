@@ -3,7 +3,9 @@ import {createAnswer} from "../services/answerService.js";
 
 export const handleGetQuestion = async (request, urlPatternResult) => {
     const questionId = urlPatternResult.pathname.groups.questionId;
-    const question = await questionService.findById(questionId);
+    const userUuid = request.headers.get('User-UUID');
+
+    const question = await questionService.findById(questionId, userUuid);
 
     console.log(`Question with id ${questionId} retrieved from the database`);
 
