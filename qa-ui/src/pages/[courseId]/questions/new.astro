@@ -6,5 +6,5 @@ const { courseId } = Astro.params;
 ---
 
 <Layout>
-    <NewQuestionForm client:load={"svelte"} courseId={courseId} />
+    <NewQuestionForm client:only={"svelte"} courseId={courseId} />
 </Layout>
