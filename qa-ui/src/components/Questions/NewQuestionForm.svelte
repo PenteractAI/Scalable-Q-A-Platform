@@ -74,6 +74,6 @@
                 ></textarea>
             </div>
         </div>
-        <button class="bg-black text-white py-4 px-2" on:click={createQuestion}>Submit</button>
+        <button class="bg-black text-white py-4 px-2" on:click={createQuestion} data-testid="submit-question-button">Submit</button>
     </div>
 </div>
