@@ -1,4 +1,5 @@
 import * as questionService from "../services/questionService.js";
+import * as cacheService from "../services/cacheService.js";
 import {createAnswer} from "../services/answerService.js";
 
 export const handleGetQuestion = async (request, urlPatternResult) => {
@@ -41,9 +42,21 @@ export const handleCreateQuestion = async (request) => {
         const { courseId, userUuid, title, content } = await request.json();
 
         const MAX_TITLE_LENGTH = 200;
+        const TTL = 60;
+        const TYPE = 'question';
 
         /**
-         * Step 1. Check the validity of the question
+         * Step 1. Check that the user is able to post a new question
+         * Each user can post only one question per minute
+         */
+        if(await cacheService.canPost(userUuid, TYPE)) {
+            await cacheService.storeWithTTL(userUuid, TYPE, TTL);
+        } else {
+            return Response.json({ error: 'You can submit only one question per minute. Please wait a bit before trying again.'}, { status: 429 });
+        }
+
+        /**
+         * Step 2. Check the validity of the question
          */
         const isEmptyString = (str) => {
             return str === null || str === undefined || str.trim() === ''
@@ -62,19 +75,19 @@ export const handleCreateQuestion = async (request) => {
         }
 
         /**
-         * Step 2. Store the question in the database
+         * Step 3. Store the question in the database
          */
         const newQuestion = await questionService.createQuestion(Number(courseId), userUuid, title, content);
 
         console.log(`Question ${newQuestion.id} created and stored in the database for course ${newQuestion.courseId}`);
 
         /**
-         * Step 3. Call the LLM API for generating three asynchronously
+         * Step 4. Call the LLM API for generating three asynchronously
          */
         generateAnswers(newQuestion.id, newQuestion.title);
 
         /**
-         * Step 4. Return the answer to the front
+         * Step 5. Return the answer to the front
          */
         return Response.json(newQuestion, { status: 201 });
     } catch (error) {

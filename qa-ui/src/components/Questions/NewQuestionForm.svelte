@@ -1,5 +1,7 @@
 <script>
-    import { userUuid } from "../../stores/stores.js";
+    import {userUuid} from "../../stores/stores.js";
+    import { showToast } from "../../stores/toastStore.js";
+
     export let courseId;
 
     // Question data
@@ -30,13 +32,16 @@
 
         isCreating = false;
 
+        const json = await response.json();
+
         if (response.status == 201) {
-
-            const question = await response.json();
-
-            window.location.href = `/${courseId}/questions/${question.id}`
+            window.location.href = `/${courseId}/questions/${json.id}`
+        } else {
+            showToast(json.error);
         }
     }
+
+
 </script>
 
 <div class="font-sans py-16 lg:mx-40">
