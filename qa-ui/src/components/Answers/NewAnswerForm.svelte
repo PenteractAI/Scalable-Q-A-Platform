@@ -1,5 +1,6 @@
 <script>
     import {userUuid} from "../../stores/stores.js";
+    import {showToast} from "../../stores/toastStore.js";
 
     export let questionId;
 
@@ -29,10 +30,14 @@
 
         isCreating = false;
 
+        const json = await response.json();
+
         if (response.status == 201) {
 
             // TODO: Implement a feedback for the user
 
+        } else {
+            showToast(json.error);
         }
     }
 

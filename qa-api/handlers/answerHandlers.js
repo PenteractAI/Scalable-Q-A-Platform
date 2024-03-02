@@ -1,4 +1,5 @@
 import * as answerService from '../services/answerService.js';
+import * as cacheService from "../services/cacheService.js";
 
 /**
  * Handler for retrieving all answers for a question
@@ -27,6 +28,15 @@ export const handleGetAnswers = async (request, urlPatternResult) => {
 export const handleCreateAnswer = async (request) => {
     try {
         const { questionId, userUuid, content } = await request.json();
+
+        const TTL = 60;
+        const TYPE = 'answer';
+
+        if(await cacheService.canPost(userUuid, TYPE)) {
+            await cacheService.storeWithTTL(userUuid, TYPE, TTL);
+        } else {
+            return Response.json({ error: 'You can submit only one answer per minute. Please wait a bit before trying again.'}, { status: 429 });
+        }
 
         const isEmptyString = (str) => {
             return str === null || str === undefined || str.trim() === ''
