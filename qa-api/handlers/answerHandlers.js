@@ -12,9 +12,14 @@ export const handleGetAnswers = async (request, urlPatternResult) => {
     const questionId = urlPatternResult.pathname.groups.questionId;
     const userUuid = request.headers.get('User-UUID');
 
-    const answers = await answerService.findAllByQuestionId(questionId, userUuid);
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page'), 10) || 1;
+    const pageSize = Number(url.searchParams.get('pageSize'), 10) || 20;
+    const offset = (page - 1) * pageSize;
 
-    console.log(`Answers retrieved from the database for question ${questionId}`);
+    const answers = await answerService.findAllByQuestionId(questionId, userUuid, pageSize, offset);
+
+    console.log(`Answers retrieved from the database for question ${questionId} (page ${page})`);
 
     return Response.json(answers, { status: 200 });
 }

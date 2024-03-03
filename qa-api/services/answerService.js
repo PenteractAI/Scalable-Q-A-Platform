@@ -8,7 +8,7 @@ import { toCamelCase } from "../utils/objectKeyTransforms.js";
  * @param questionId
  * @returns {Promise<Object|Array>}
  */
-export const findAllByQuestionId = async (questionId, userUuid) => {
+export const findAllByQuestionId = async (questionId, userUuid, pageSize, offset) => {
     const results = await sql`
         SELECT 
            a. id, 
@@ -28,7 +28,10 @@ export const findAllByQuestionId = async (questionId, userUuid) => {
             question_id = ${questionId}
         ORDER BY
             GREATEST(creation_time, last_upvote_time) DESC
-        LIMIT 20;
+        LIMIT 
+            ${pageSize}
+        OFFSET 
+            ${offset}
     `;
 
     return toCamelCase(results);
