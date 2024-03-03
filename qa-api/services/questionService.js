@@ -36,7 +36,7 @@ export const findById = async (id, userUuid) => {
  *
  * @returns {Promise<Object|Array>}
  */
-export const findAllByCourseId = async (courseId, userUuid) => {
+export const findAllByCourseId = async (courseId, userUuid, pageSize, offset) => {
     const results = await sql`
         SELECT
             q.id, 
@@ -57,7 +57,10 @@ export const findAllByCourseId = async (courseId, userUuid) => {
             course_id = ${courseId}
         ORDER BY
             GREATEST(creation_time, last_upvote_time) DESC
-        LIMIT 20
+        LIMIT 
+            ${pageSize}
+        OFFSET 
+            ${offset}
     `;
 
     return toCamelCase(results);

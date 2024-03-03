@@ -24,9 +24,14 @@ export const handleGetQuestions = async (request, urlPatternResult) => {
     const courseId = urlPatternResult.pathname.groups.courseId;
     const userUuid = request.headers.get('User-UUID');
 
-    const questions = await questionService.findAllByCourseId(courseId, userUuid);
+    const url = new URL(request.url);
+    const page = Number(url.searchParams.get('page'), 10) || 1;
+    const pageSize = Number(url.searchParams.get('pageSize'), 10) || 20;
+    const offset = (page - 1) * pageSize;
 
-    console.log(`Questions retrieved from the database for course ${courseId}`);
+    const questions = await questionService.findAllByCourseId(courseId, userUuid, pageSize, offset);
+
+    console.log(`Questions retrieved from the database for course ${courseId} (page ${page})`);
 
     return Response.json(questions, { status: 200 });
 }
