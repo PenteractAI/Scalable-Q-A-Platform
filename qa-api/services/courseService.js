@@ -1,5 +1,4 @@
-import { sql } from "../database/database.js";
-import { toCamelCase } from "../utils/objectKeyTransforms.js";
+import * as courseRepository from "../repositories/courseRepository.js";
 
 /**
  * Finds all courses
@@ -7,12 +6,5 @@ import { toCamelCase } from "../utils/objectKeyTransforms.js";
  * @returns {Promise<Object|Array>}
  */
 export const findAll = async() => {
-    const results = await sql`
-        SELECT
-            id, title, description
-        FROM
-            courses
-    `;
-
-    return toCamelCase(results);
+    return await courseRepository.findAll();
 }

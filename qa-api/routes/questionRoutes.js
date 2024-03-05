@@ -2,7 +2,7 @@ import {
     handleGetQuestion,
     handleGetQuestions,
     handleCreateQuestion,
-    handleUpvoteQuestion
+    handleUpvoteQuestion, handleRetrieveNewQuestions
 } from "../handlers/questionHandlers.js";
 
 export const questionRoutes = [
@@ -25,5 +25,10 @@ export const questionRoutes = [
         method: "PUT",
         pattern: new URLPattern({ pathname: "/questions/:questionId/upvote"}),
         fn: handleUpvoteQuestion
+    },
+    {
+        method: "GET",
+        pattern: new URLPattern({ pathname: "/ws/courses/:courseId/questions"}),
+        fn: handleRetrieveNewQuestions
     }
 ];

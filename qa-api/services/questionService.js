@@ -1,5 +1,7 @@
-import { sql } from "../database/database.js";
-import { toCamelCase } from "../utils/objectKeyTransforms.js";
+import * as questionRepository from "../repositories/questionRepository.js";
+import {Question} from "../models/question.js";
+import * as cacheService from "./cacheService.js";
+import {createAnswer} from "./answerService.js";
 
 /**
  * Find a question by its ID, including whether the user has upvoted it
@@ -8,27 +10,9 @@ import { toCamelCase } from "../utils/objectKeyTransforms.js";
  * @returns {Promise<Object|Array>}
  */
 export const findById = async (id, userUuid) => {
-    const results = await sql`
-        SELECT
-            q.id,
-            q.course_id,
-            q.user_uuid,
-            q.title,
-            q.content,
-            q.creation_time,
-            q.upvote_count,
-            q.last_upvote_time,
-            (qv.user_uuid IS NOT NULL) AS user_has_upvoted
-        FROM
-            questions as q
-        LEFT JOIN
-            question_votes as qv ON q.id = qv.id
-            AND qv.user_uuid = ${userUuid}
-        WHERE
-            q.id = ${id}
-    `;
-
-    return toCamelCase(results[0]);
+    const question = await questionRepository.findById(id, userUuid);
+    console.log(`Question with id ${id} retrieved from the database`);
+    return question;
 }
 
 /**
@@ -36,34 +20,11 @@ export const findById = async (id, userUuid) => {
  *
  * @returns {Promise<Object|Array>}
  */
-export const findAllByCourseId = async (courseId, userUuid, pageSize, offset) => {
-    const results = await sql`
-        SELECT
-            q.id, 
-            q.course_id, 
-            q.user_uuid, 
-            q.title, 
-            q.content, 
-            q.creation_time, 
-            q.upvote_count, 
-            q.last_upvote_time,
-            (qv.user_uuid IS NOT NULL) AS user_has_upvoted
-        FROM
-            questions as q
-        LEFT JOIN
-            question_votes as qv ON q.id = qv.id 
-            AND qv.user_uuid = ${userUuid}
-        WHERE
-            course_id = ${courseId}
-        ORDER BY
-            GREATEST(creation_time, last_upvote_time) DESC
-        LIMIT 
-            ${pageSize}
-        OFFSET 
-            ${offset}
-    `;
-
-    return toCamelCase(results);
+export const findAllByCourseId = async (courseId, userUuid, page, pageSize) => {
+    const offset = (page - 1) * pageSize;
+    const questions =  await questionRepository.findAllByCourseId(courseId, userUuid, pageSize, offset);
+    console.log(`Questions retrieved from the database for course ${courseId} (page ${page})`);
+    return questions;
 }
 
 /**
@@ -76,59 +37,81 @@ export const findAllByCourseId = async (courseId, userUuid, pageSize, offset) =>
  * @returns {Promise<Object|Array>}
  */
 export const createQuestion = async (courseId, userUuid, title, content) => {
-    const results = await sql`
-        INSERT INTO
-            questions (course_id, user_uuid, title, content)
-        VALUES 
-            (${courseId}, ${userUuid}, ${title}, ${content})
-        RETURNING
-            id, course_id, user_uuid, title, content, creation_time, upvote_count, last_upvote_time
-    `;
 
-    return toCamelCase(results[0]);
+    // Check the validity of the question
+    const question = new Question({
+       courseId,
+       userUuid,
+       title,
+       content
+    });
+
+    question.validate();
+
+    // Ensure that the user can post a new question
+    const type = 'question';
+    if(!(await cacheService.canPost(question.userUuid, type))) {
+        throw new Error('You can submit only one question per minute. Please wait a bit before trying again.');
+    }
+
+    // Create a new question instance and store it in the database
+    const newQuestion = await questionRepository.createQuestion(courseId, userUuid, title, content);
+
+    // Store the entry of the user in a cache with a TTL of 60 seconds
+    await cacheService.storeWithTTL(newQuestion.userUuid, type);
+
+    // Publish the question in Redis to trigger subscribers
+    cacheService.publishMessage(`course:${newQuestion.courseId}:questions`, newQuestion);
+
+    // Generate 3 answers with LLM-API
+    generateAnswers(newQuestion.id, newQuestion.title);
+
+    console.log(`Question ${newQuestion.id} created and stored in the database for course ${newQuestion.courseId}`);
+
+    return newQuestion;
+}
+
+const generateAnswers = async (questionId, title) => {
+    const MAX_GENERATED_ANSWERS = 3;
+    for (let i = 0; i < MAX_GENERATED_ANSWERS; i++) {
+        const response = await fetch("http://llm-api:7000/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                question: title
+            })
+        });
+
+        const data = await response.json();
+
+        // Store the question in the database
+        const newAnswer = await createAnswer(questionId, "Doctor Robotnik", data[0].generated_text);
+
+        console.log(`Answer ${newAnswer.id} created and stored in the database for question ${questionId}`);
+    }
 }
 
 /**
- * Increment the upvote count of a question by one
+ * Upvote a question by increment the upvote count and create a log for the user
  *
- * @param id
+ * @param questionId
  * @param userUuid
- * @returns {Promise<Object|Array>}
+ * @returns {Promise<Object|Array|Response>}
  */
-export const upvoteQuestion = async (id) => {
-    const results = await sql`
-        UPDATE
-            questions
-        SET
-            upvote_count = upvote_count + 1,
-            last_upvote_time = CURRENT_TIMESTAMP
-        WHERE
-            id = ${id}
-        RETURNING 
-            id
-    `;
+export const upvote = async (questionId, userUuid) => {
+    // Insert a log for the user that upvote the question
+    const questionUpvoteLog  = await questionRepository.createUpvoteLog(questionId, userUuid);
 
-    return toCamelCase(results[0]);
-}
+    // If the insert does not return any value, it means that the upvote has already been created
+    if (questionUpvoteLog === undefined) {
+        throw new Error('The user has already upvoted the question.');
+    }
 
-/**
- * Create a log for an upvote made by an user
- *
- * @param id
- * @param userUuid
- * @returns {Promise<Object|Array>}
- */
-export const createUpvoteLog = async (id, userUuid) => {
-    const results = await sql`
-        INSERT INTO
-            question_votes (id, user_uuid)
-        VALUES
-            (${id}, ${userUuid})
-        ON CONFLICT (id, user_uuid)
-            DO NOTHING
-        RETURNING 
-            id, user_uuid, upvote_time
-    `;
+    const question = await questionRepository.upvoteQuestion(questionId);
 
-    return toCamelCase(results[0]);
+    console.log(`Question ${questionId} upvoted by user ${userUuid}`);
+
+    return question;
 }

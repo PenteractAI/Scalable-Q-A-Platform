@@ -1,15 +1,6 @@
-import redisClient from "../utils/redisClient.js";
+import {cmdClient} from "../utils/redis.js";
 
-/**
- * Builds a key for Redis from the user UUID and type of content
- *
- * @param {string} userUuid - The UUID of the user.
- * @param {string} type - Type of content (answer, question)
- * @returns {string} The submission key for grading.
- */
-const buildSubmissionKey = (userUuid, type) => {
-    return `user:${userUuid}:${type}`;
-}
+const TTL = 60;
 
 /**
  * Check if the user can publish a new content depending on its type
@@ -19,10 +10,10 @@ const buildSubmissionKey = (userUuid, type) => {
  * @returns {Promise<boolean>}
  */
 export const canPost = async (userUuid, type) => {
-    const key = buildSubmissionKey(userUuid, type);
-    const exists = await redisClient.get(key);
+    const key = `user:${userUuid}:${type}`;
+    const exists = await cmdClient.get(key);
     if(exists) {
-        const ttl = await redisClient.ttl(key);
+        const ttl = await cmdClient.ttl(key);
         console.log(`User ${userUuid} tried to add a new ${type} too early. Remaining TTL: ${ttl}s.`);
     }
     return !exists;
@@ -33,10 +24,13 @@ export const canPost = async (userUuid, type) => {
  *
  * @param userUuid
  * @param type
- * @param ttl
  * @returns {Promise<void>}
  */
-export const storeWithTTL = async (userUuid, type, ttl) => {
-    const key = buildSubmissionKey(userUuid, type);
-    await redisClient.set(key, 'true', {EX: ttl });
+export const storeWithTTL = async (userUuid, type) => {
+    const key = `user:${userUuid}:${type}`;
+    await cmdClient.set(key, 'true', {EX: TTL });
+}
+
+export const publishMessage = async (channel, message) => {
+    await cmdClient.publish(channel, JSON.stringify(message));
 }

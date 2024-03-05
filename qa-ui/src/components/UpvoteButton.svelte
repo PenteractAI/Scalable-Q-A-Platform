@@ -12,7 +12,7 @@
             userUuid: $userUuid
         }
 
-        const response = await fetch(`/api/${type}s/${id}/upvote`, {
+        const response = await fetch(`/api/${type}/${id}/upvote`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

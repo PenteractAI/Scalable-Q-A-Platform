@@ -1,5 +1,5 @@
 import * as answerService from '../services/answerService.js';
-import * as cacheService from "../services/cacheService.js";
+import {subClient} from "../utils/redis.js";
 
 /**
  * Handler for retrieving all answers for a question
@@ -13,11 +13,10 @@ export const handleGetAnswers = async (request, urlPatternResult) => {
     const userUuid = request.headers.get('User-UUID');
 
     const url = new URL(request.url);
-    const page = Number(url.searchParams.get('page'), 10) || 1;
-    const pageSize = Number(url.searchParams.get('pageSize'), 10) || 20;
-    const offset = (page - 1) * pageSize;
+    const page = Number(url.searchParams.get('page')) || 1;
+    const pageSize = Number(url.searchParams.get('pageSize')) || 20;
 
-    const answers = await answerService.findAllByQuestionId(questionId, userUuid, pageSize, offset);
+    const answers = await answerService.findAllByQuestionId(questionId, userUuid, page, pageSize);
 
     console.log(`Answers retrieved from the database for question ${questionId} (page ${page})`);
 
@@ -33,36 +32,12 @@ export const handleGetAnswers = async (request, urlPatternResult) => {
 export const handleCreateAnswer = async (request) => {
     try {
         const { questionId, userUuid, content } = await request.json();
-
-        const TTL = 60;
-        const TYPE = 'answer';
-
-        if(await cacheService.canPost(userUuid, TYPE)) {
-            await cacheService.storeWithTTL(userUuid, TYPE, TTL);
-        } else {
-            return Response.json({ error: 'You can submit only one answer per minute. Please wait a bit before trying again.'}, { status: 429 });
-        }
-
-        const isEmptyString = (str) => {
-            return str === null || str === undefined || str.trim() === ''
-        }
-
-        // Check the content is not empty
-        if (isEmptyString(content)) {
-            return Response.json({ error: 'The content field is empty.'}, { status: 400 });
-        }
-
-        // Store the question in the database
         const newAnswer = await answerService.createAnswer(questionId, userUuid, content);
-
-        console.log(`Answer ${newAnswer.id} created and stored in the database for question ${questionId}`);
-
-        // Indicates that a new resource was created and send the new question
         return Response.json(newAnswer, { status: 201 });
     } catch (error) {
         console.error(`Failed to create answer: ${error}`);
 
-        return Response.json({ error: 'Failed to create answer' }, { status: 500 });
+        return Response.json({ error: error.message }, { status: 500 });
     }
 }
 
@@ -95,4 +70,41 @@ export const handleUpvoteAnswer = async (request, urlPatternResult) => {
     console.log(`Answer ${answerId} upvoted by user ${userUuid}`);
 
     return Response.json(answer, { status: 200 });
+}
+
+/**
+ * WebSocket connection to send new answers to the view
+ *
+ * @param request
+ * @param urlPatternResult
+ * @returns {Promise<*>}
+ */
+export const handleRetrieveNewAnswers = async (request, urlPatternResult) => {
+
+    console.log("WebSocket connection attempt received");
+
+    const { socket, response } = Deno.upgradeWebSocket(request);
+    const questionId = urlPatternResult.pathname.groups.questionId;
+
+    socket.onopen = async () => {
+        console.log("WebsSocket connection opened.");
+        await subClient.subscribe(`question:${questionId}:answers`, async (message) => {
+            if (socket.readyState === WebSocket.OPEN) socket.send(message);
+        });
+    }
+
+    socket.onmessage = async (event) => {
+        const jsonData = JSON.parse(event.data);
+        console.log(jsonData);
+    }
+
+    socket.onerror = (error) => {
+        console.log("WebSocket error: ", error);
+    }
+
+    socket.onclose = (event) => {
+        console.log("WebSocket connection closed: ", event.code, event.reason);
+    }
+
+    return response;
 }

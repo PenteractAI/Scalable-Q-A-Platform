@@ -26,17 +26,11 @@
             body: JSON.stringify(data),
         });
 
-        // TODO: Check status : 201 success, 500 error
-
         isCreating = false;
 
         const json = await response.json();
 
-        if (response.status == 201) {
-
-            // TODO: Implement a feedback for the user
-
-        } else {
+        if (response.status != 201) {
             showToast(json.error);
         }
     }

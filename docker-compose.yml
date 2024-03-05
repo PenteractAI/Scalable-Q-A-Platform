@@ -12,7 +12,7 @@ services:
       - qa-api
       - qa-ui
     ports:
-      - 7800:7800
+      - "7800:7800"
 
   qa-api:
     build: qa-api
