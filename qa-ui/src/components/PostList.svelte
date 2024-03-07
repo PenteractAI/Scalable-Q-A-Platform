@@ -28,9 +28,11 @@
             }
         });
 
-        const newPosts = await response.json();
+        let newPosts = await response.json();
 
         if(newPosts.length > 0) {
+            // Filter new posts to exclude the ones already shown
+            newPosts = newPosts.filter(np => !posts.some(p => p.id === np.id));
             posts = [...posts, ...newPosts];
             hasMore = newPosts.length == pageSize;
             page += 1;

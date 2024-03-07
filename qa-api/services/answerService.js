@@ -22,7 +22,7 @@ export const findAllByQuestionId = async (questionId, userUuid, page, pageSize) 
  * @param content
  * @returns {Promise<Object|Array>}
  */
-export const createAnswer = async (questionId, userUuid, content) => {
+export const createAnswer = async (questionId, userUuid, content, bypassTTL = false) => {
 
     const answer = new Answer({
        questionId, userUuid, content
@@ -32,7 +32,7 @@ export const createAnswer = async (questionId, userUuid, content) => {
 
     // Ensure that the user can post a new answer
     const type = 'answer';
-    if(!(await cacheService.canPost(userUuid, type))) {
+    if(!bypassTTL && !(await cacheService.canPost(userUuid, type))) {
         throw new Error('You can submit only one answer per minute. Please wait a bit before trying again.');
     }
 
@@ -40,10 +40,12 @@ export const createAnswer = async (questionId, userUuid, content) => {
     const newAnswer = await answerRepository.createAnswer(questionId, userUuid, content);
 
     // Store the entry of the user in a cache with a TTL of 60 seconds
-    await cacheService.storeWithTTL(newAnswer.userUuid, type);
+    if(!bypassTTL) {
+        await cacheService.storeWithTTL(newAnswer.userUuid, type);
+    }
 
     // Publish the answer in Redis to trigger subscribers
-    cacheService.publishMessage(`question:${newAnswer.questionId}:answers`, newAnswer);
+    cacheService.publishMessage(`question:${questionId}:answers`, newAnswer);
 
     console.log(`Answer ${newAnswer.id} created and stored in the database for question ${questionId}`);
 

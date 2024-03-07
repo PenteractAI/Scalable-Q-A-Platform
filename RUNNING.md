@@ -28,8 +28,6 @@ TODO: For merits, the RUNNING.md also outlines the steps needed to use Kubernete
 - kubectl apply -f kubernetes/qa-api-deployment-hpa.yaml
 - kubectl apply -f kubernetes/qa-redis-deployment.yaml
 - kubectl apply -f kubernetes/qa-redis-service.yaml
-- minikube addons enable ingress
-- kubectl apply -f kubernetes/qa-app-ingress.yaml
 - kubectl apply -f kubernetes/nginx-deployment.yaml
 - kubectl apply -f kubernetes/nginx-configmap.yaml
 - kubectl apply -f kubernetes/nginx-service.yaml

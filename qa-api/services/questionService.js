@@ -74,7 +74,7 @@ export const createQuestion = async (courseId, userUuid, title, content) => {
 const generateAnswers = async (questionId, title) => {
     const MAX_GENERATED_ANSWERS = 3;
     for (let i = 0; i < MAX_GENERATED_ANSWERS; i++) {
-        const response = await fetch("http://llm-api:7000/", {
+        const response = await fetch("http://llm-api-service:7000/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -87,9 +87,7 @@ const generateAnswers = async (questionId, title) => {
         const data = await response.json();
 
         // Store the question in the database
-        const newAnswer = await createAnswer(questionId, "Doctor Robotnik", data[0].generated_text);
-
-        console.log(`Answer ${newAnswer.id} created and stored in the database for question ${questionId}`);
+        await createAnswer(questionId, "Doctor Robotnik", data[0].generated_text, true);
     }
 }
 

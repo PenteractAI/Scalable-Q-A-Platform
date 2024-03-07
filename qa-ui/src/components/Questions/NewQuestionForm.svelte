@@ -28,8 +28,6 @@
             body: JSON.stringify(data),
         });
 
-        // TODO: Check status : 201 success, 500 error
-
         isCreating = false;
 
         const json = await response.json();
