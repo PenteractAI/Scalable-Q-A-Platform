@@ -7,6 +7,6 @@ const { courseId, questionId } = Astro.params;
 
 ---
 <Layout>
-    <QuestionSection questionId={questionId} courseId={courseId} client:only={"svelte"} />
+    <QuestionSection type={"questions"} questionId={questionId} courseId={courseId} client:only={"svelte"} />
     <PostList parentId={questionId} type={"answers"} client:only={"svelte"}/>
 </Layout>

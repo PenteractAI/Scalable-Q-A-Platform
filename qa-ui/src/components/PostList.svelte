@@ -47,8 +47,9 @@
     const getNewPosts = async () => {
 
         const host = window.location.hostname;
+        const port = window.location.port;
         const endpoint = type === 'questions' ? `/api/ws/courses/${parentId}/questions` : `/api/ws/questions/${parentId}/answers`;
-        ws = new WebSocket(`ws://${host}:7800${endpoint}`);
+        ws = new WebSocket(`ws://${host}:${port}${endpoint}`);
 
         ws.onopen = () => {
             console.log('WebSocket is opened.');
@@ -58,7 +59,6 @@
             console.log('Message received.');
 
             const data = JSON.parse(message.data);
-            console.log(data);
             posts = [data, ...posts];
         }
 

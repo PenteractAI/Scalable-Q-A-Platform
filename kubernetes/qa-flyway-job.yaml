@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: qa-flyway-job
+spec:
+    template:
+        metadata:
+            name: qa-flyway-job
+        spec:
+            containers:
+                -   name: qa-flyway
+                    image: qa-flyway:latest
+                    imagePullPolicy: Never
+                    env:
+                        -   name: FLYWAY_USER
+                            valueFrom:
+                                secretKeyRef:
+                                    name: qa-database-cluster-app
+                                    key: username
+                                    optional: false
+                        -   name: FLYWAY_PASSWORD
+                            valueFrom:
+                                secretKeyRef:
+                                    name: qa-database-cluster-app
+                                    key: password
+                                    optional: false
+                        -   name: DATABASE_CLUSTER_RW_SERVICE_HOST
+                            value: "qa-database-cluster-rw"
+                        -   name: DATABASE_CLUSTER_RW_SERVICE_PORT
+                            value: "5432"
+            restartPolicy: OnFailure

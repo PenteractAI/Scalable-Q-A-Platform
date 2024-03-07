@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: qa-redis-deployment
+    labels:
+        app: qa-redis
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: qa-redis
+    template:
+        metadata:
+            name: qa-redis
+            labels:
+                app: qa-redis
+        spec:
+            containers:
+                -   name: qa-redis
+                    image: redis:latest
+                    imagePullPolicy: IfNotPresent
+                    ports:
+                        -   containerPort: 6379
+            restartPolicy: Always
+      
