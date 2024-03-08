@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
     name: qa-ui-service
+    labels:
+        app: qa-ui
+        monitor: "true"
 spec:
     selector:
         app: qa-ui

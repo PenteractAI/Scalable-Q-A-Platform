@@ -31,8 +31,18 @@ TODO: For merits, the RUNNING.md also outlines the steps needed to use Kubernete
 - kubectl apply -f kubernetes/nginx-deployment.yaml
 - kubectl apply -f kubernetes/nginx-configmap.yaml
 - kubectl apply -f kubernetes/nginx-service.yaml
+- kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml --force-conflicts=true --server-side=true
+- kubectl apply -f prometheus_rbac.yaml
+- kubectl apply -f prometheus_instance.yaml
 
-
+[//]: # (- kubectl port-forward svc/prometheus-operated 9090:9090)
+- kubectl create deployment grafana --image=docker.io/grafana/grafana:latest
+- kubectl expose deployment grafana --port 3000
+- kubectl port-forward svc/grafana 3000:3000
+- username: admin, password: admin
+- kubectl apply -f expose_prometheus.yaml
+- Grafana will be able to pull the metrics from http://<node_ip>:30900. To view the <node_ip>, run kubectl get nodes -o wide.
+  Enter http://<node_ip>:30900 in the URL box, then click Save & Test:
 
 # Accessing the application
 - minikube service nginx-service --url
