@@ -1,2 +1,2 @@
 FROM nginx:latest
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx_kubernetes.conf /etc/nginx/nginx_kubernetes.conf

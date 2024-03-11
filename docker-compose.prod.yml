@@ -25,7 +25,7 @@ services:
     depends_on:
       - database
       - flyway
-      - redis
+      - qa-redis-service
     env_file:
       - project.env
     deploy:
@@ -101,7 +101,7 @@ services:
     volumes:
       - ./e2e-playwright/tests:/e2e-playwright/tests
 
-  redis:
+  qa-redis-service:
     image: redis:latest
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
