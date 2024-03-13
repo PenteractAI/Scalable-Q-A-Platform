@@ -32,7 +32,9 @@ export const handleGetAnswers = async (request, urlPatternResult) => {
 export const handleCreateAnswer = async (request) => {
     try {
         const { questionId, userUuid, content } = await request.json();
+
         const newAnswer = await answerService.createAnswer(questionId, userUuid, content);
+
         return Response.json(newAnswer, { status: 201 });
     } catch (error) {
         console.error(`Failed to create answer: ${error}`);
@@ -50,26 +52,18 @@ export const handleCreateAnswer = async (request) => {
  * @returns {Promise<Response>}
  */
 export const handleUpvoteAnswer = async (request, urlPatternResult) => {
-    const answerId = urlPatternResult.pathname.groups.answerId;
-    const { userUuid } = await request.json();
+    try {
+        const answerId = urlPatternResult.pathname.groups.answerId;
+        const { userUuid } = await request.json();
 
-    // Insert a log for the user that upvote the answer
-    const answerUpvoteLog = await answerService.createUpvoteLog(answerId, userUuid);
+        const answer = await answerService.upvote(answerId, userUuid);
 
-    // If the insert does not return any value, it means that the upvote has already been created
-    if (answerUpvoteLog === undefined) {
-        console.warn(`Answer ${answerId} already upvoted by user ${userUuid}`);
+        return Response.json(answer, { status: 200 });
+    } catch (error) {
+        console.error(`Failed to upvote question: ${error}`);
 
-        // Even if the right status code would be "409", we send a 200 (OK) code to avoid the error to be automatically
-        // handled by the browser
-        return Response.json({ error: 'The user has already upvoted the answer.' }, { status: 200 });
+        return Response.json({ error: error.message }, { status: 500 });
     }
-
-    const answer = await answerService.upvoteAnswer(answerId);
-
-    console.log(`Answer ${answerId} upvoted by user ${userUuid}`);
-
-    return Response.json(answer, { status: 200 });
 }
 
 /**

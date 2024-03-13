@@ -1,4 +1,7 @@
 import * as courseRepository from "../repositories/courseRepository.js";
+import {cacheMethodCalls} from "../utils/cacheUtil.js";
+
+const cachedCourseRepo = cacheMethodCalls(courseRepository, []);
 
 /**
  * Finds all courses
@@ -6,7 +9,7 @@ import * as courseRepository from "../repositories/courseRepository.js";
  * @returns {Promise<Object|Array>}
  */
 export const findAll = async () => {
-    return await courseRepository.findAll();
+    return await cachedCourseRepo.findAll();
 }
 
 /**
@@ -15,5 +18,5 @@ export const findAll = async () => {
  * @returns {Promise<void>}
  */
 export const findById = async (id) => {
-    return await courseRepository.findById(id);
+    return await cachedCourseRepo.findById(id);
 }

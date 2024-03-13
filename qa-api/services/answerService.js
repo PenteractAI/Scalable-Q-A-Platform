@@ -1,6 +1,9 @@
 import * as answerRepository from "../repositories/answerRepository.js";
 import * as cacheService from "./cacheService.js";
 import {Answer} from "../models/answer.js";
+import {cacheMethodCalls} from "../utils/cacheUtil.js";
+
+const cachedAnswerRepo = cacheMethodCalls(answerRepository, ["createAnswer", "upvoteAnswer"])
 
 
 /**
@@ -11,7 +14,7 @@ import {Answer} from "../models/answer.js";
  */
 export const findAllByQuestionId = async (questionId, userUuid, page, pageSize) => {
     const offset = (page - 1) * pageSize;
-    return await answerRepository.findAllByQuestionId(questionId, userUuid, pageSize, offset);
+    return await cachedAnswerRepo.findAllByQuestionId(questionId, userUuid, pageSize, offset);
 }
 
 /**
@@ -37,7 +40,7 @@ export const createAnswer = async (questionId, userUuid, content, bypassTTL = fa
     }
 
     // Create a new answer instance and store it in the database
-    const newAnswer = await answerRepository.createAnswer(questionId, userUuid, content);
+    const newAnswer = await cachedAnswerRepo.createAnswer(questionId, userUuid, content);
 
     // Store the entry of the user in a cache with a TTL of 60 seconds
     if(!bypassTTL) {
@@ -59,17 +62,20 @@ export const createAnswer = async (questionId, userUuid, content, bypassTTL = fa
  * @param userUuid
  * @returns {Promise<Object|Array>}
  */
-export const upvoteAnswer = async (id) => {
-    return await answerRepository.upvoteAnswer(id);
-}
+export const upvote = async (id, userUuid) => {
+    // Insert a log for the user that upvote the answer
+    const answerUpvoteLog = await cachedAnswerRepo.createUpvoteLog(id, userUuid);
 
-/**
- * Create a log for an upvote made by an user
- *
- * @param id
- * @param userUuid
- * @returns {Promise<Object|Array>}
- */
-export const createUpvoteLog = async (id, userUuid) => {
-    return await answerRepository.createUpvoteLog(id, userUuid);
+    // If the insert does not return any value, it means that the upvote has already been created
+    if (answerUpvoteLog === undefined) {
+        throw new Error('The user has already upvoted the answer.');
+    }
+
+    const answer = await cachedAnswerRepo.upvoteAnswer(id);
+
+    console.log(`Answer ${id} upvoted by user ${userUuid}`);
+
+    return answer;
+
+
 }

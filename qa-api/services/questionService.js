@@ -2,6 +2,9 @@ import * as questionRepository from "../repositories/questionRepository.js";
 import {Question} from "../models/question.js";
 import * as cacheService from "./cacheService.js";
 import {createAnswer} from "./answerService.js";
+import {cacheMethodCalls} from "../utils/cacheUtil.js";
+
+const cachedQuestionRepo = cacheMethodCalls(questionRepository, ["createQuestion", "upvoteQuestion"]);
 
 /**
  * Find a question by its ID, including whether the user has upvoted it
@@ -10,7 +13,7 @@ import {createAnswer} from "./answerService.js";
  * @returns {Promise<Object|Array>}
  */
 export const findById = async (id, userUuid) => {
-    const question = await questionRepository.findById(id, userUuid);
+    const question = await cachedQuestionRepo.findById(id, userUuid);
     console.log(`Question with id ${id} retrieved from the database`);
     return question;
 }
@@ -22,7 +25,7 @@ export const findById = async (id, userUuid) => {
  */
 export const findAllByCourseId = async (courseId, userUuid, page, pageSize) => {
     const offset = (page - 1) * pageSize;
-    const questions =  await questionRepository.findAllByCourseId(courseId, userUuid, pageSize, offset);
+    const questions =  await cachedQuestionRepo.findAllByCourseId(courseId, userUuid, pageSize, offset);
     console.log(`Questions retrieved from the database for course ${courseId} (page ${page})`);
     return questions;
 }
@@ -55,7 +58,7 @@ export const createQuestion = async (courseId, userUuid, title, content) => {
     }
 
     // Create a new question instance and store it in the database
-    const newQuestion = await questionRepository.createQuestion(courseId, userUuid, title, content);
+    const newQuestion = await cachedQuestionRepo.createQuestion(courseId, userUuid, title, content);
 
     // Store the entry of the user in a cache with a TTL of 60 seconds
     await cacheService.storeWithTTL(newQuestion.userUuid, type);
@@ -100,14 +103,14 @@ const generateAnswers = async (questionId, title) => {
  */
 export const upvote = async (questionId, userUuid) => {
     // Insert a log for the user that upvote the question
-    const questionUpvoteLog  = await questionRepository.createUpvoteLog(questionId, userUuid);
+    const questionUpvoteLog  = await cachedQuestionRepo.createUpvoteLog(questionId, userUuid);
 
     // If the insert does not return any value, it means that the upvote has already been created
     if (questionUpvoteLog === undefined) {
         throw new Error('The user has already upvoted the question.');
     }
 
-    const question = await questionRepository.upvoteQuestion(questionId);
+    const question = await cachedQuestionRepo.upvoteQuestion(questionId);
 
     console.log(`Question ${questionId} upvoted by user ${userUuid}`);
 

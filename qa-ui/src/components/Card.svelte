@@ -9,7 +9,7 @@
            {type === 'questions' ? 'hover:border-cerise-red-200 hover:ring-1 hover:ring-cerise-red-600 hover:shadow-cerise-red-500 hover:shadow-inner hover:shadow-lg transition ease-in-out' : ''}">
     <div class="px-8">
         {#if type === 'questions'}
-            <a href={`/${post.courseId}/questions/${post.id}`} class="inline-block py-6">
+            <a href={`/${post.courseId}/questions/${post.id}`} class="inline-block py-6 w-full">
                 <div class="font-sans font-medium text-xl mb-2">{ post.title }</div>
                 <p class="font-sans text-base text-gray-500 line-clamp-1 text-justify">{ post.content }</p>
             </a>
