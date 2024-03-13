@@ -50,7 +50,9 @@
             <input
                     autocomplete="title"
                     bind:value={title}
-                    class="block w-full py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                    class="block w-full rounded-md py-1.5 pl-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400
+                               focus:ring-1 focus:ring-inset focus:ring-cerise-red-600
+                               sm:text-sm sm:leading-6"
                     id="title"
                     name="title"
                     placeholder="How to..?"
@@ -66,7 +68,7 @@
                 <textarea
                         bind:value={content}
                         class="block w-full rounded-md py-1.5 pl-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400
-                               focus:ring-2 focus:ring-inset focus:ring-indigo-600
+                               focus:ring-1 focus:ring-inset focus:ring-cerise-red-600
                                sm:text-sm sm:leading-6"
                         id="content"
                         name="content"

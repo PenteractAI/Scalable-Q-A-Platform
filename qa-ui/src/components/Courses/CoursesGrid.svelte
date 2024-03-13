@@ -19,7 +19,7 @@
 {#await promise}
     <p>Loading courses...</p>
 {:then courses}
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {#each courses as course}
             <CourseCard bind:course/>
         {/each}

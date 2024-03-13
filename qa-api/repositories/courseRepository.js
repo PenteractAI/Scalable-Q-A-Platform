@@ -7,7 +7,7 @@ import {Course} from "../models/course.js";
  *
  * @returns {Promise<Object|Array>}
  */
-export const findAll = async() => {
+export const findAll = async () => {
     const results = await sql`
         SELECT
             id, title, description
@@ -16,4 +16,22 @@ export const findAll = async() => {
     `;
 
     return results.map(result => new Course(toCamelCase(result)));
+}
+
+/**
+ * Find a course by its ID
+ *
+ * @returns {Promise<Course>}
+ */
+export const findById = async (id) => {
+    const results = await sql`
+        SELECT
+            id, title, description
+        FROM
+            courses
+        WHERE
+            id = ${id}
+    `;
+
+    return new Course(toCamelCase(results[0]));
 }

@@ -37,23 +37,25 @@
 
 </script>
 
-<div class="font-sans">
+<div class="font-sans pt-6">
     <div>
         <label for="content" class="block text-sm font-medium leading-6 text-gray-900">Write an answer</label>
         <div class="mt-2">
-                    <textarea
-                            bind:value={content}
-                            class="block w-full rounded-md py-1.5 pl-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400
-                                   focus:ring-2 focus:ring-inset focus:ring-indigo-600
-                                   sm:text-sm sm:leading-6"
-                            id="content"
-                            name="content"
-                            placeholder="Write your answer here"
-                            rows="3"
-                            minlength="1"
-                            disabled="{isCreating ? 'disabled' : ''}"
-                    ></textarea>
+            <textarea
+                    bind:value={content}
+                    class="block w-full rounded-md py-1.5 pl-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400
+                           focus:ring-2 focus:ring-inset focus:ring-indigo-600
+                           sm:text-sm sm:leading-6"
+                    id="content"
+                    name="content"
+                    placeholder="Write your answer here"
+                    rows="3"
+                    minlength="1"
+                    disabled="{isCreating ? 'disabled' : ''}"
+            ></textarea>
         </div>
     </div>
-    <button class="bg-black text-white py-4 px-2" on:click={createAnswer}>Submit</button>
+    <div class="flex justify-center mt-4">
+        <button class="bg-black text-white py-2 px-4" on:click={createAnswer}>Submit</button>
+    </div>
 </div>

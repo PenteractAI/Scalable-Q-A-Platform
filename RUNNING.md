@@ -4,10 +4,14 @@
 ```shell
 docker compose --profile migrate  -f .\docker-compose.yml up -d
 ```
+Wait for the logs of qa-api to show "Listening on http://localhost:7777/
+"
 ### Production mode
 ```shell
 docker compose --profile migrate  -f .\docker-compose.prod.yml up -d
 ```
+Wait for the logs of qa-api to show "Listening on http://localhost:7777/
+"
 ## Kubernetes
 ### Deploy the application
 The application can be deployed on Kubernetes using the following commands at the root of the project:

@@ -1,7 +1,10 @@
-<script>
-  import { userUuid } from "../stores/stores.js";
-</script>
-
-<nav class="p-4 mb-4 shadow">
-  <span class="text-2xl text-gray-700 font-serif">Hello {$userUuid}!</span>
+<nav class="top-0 z-50 w-full bg-black mb-4">
+  <div class="px-10 py-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center justify-start rtl:justify-end">
+        <a class="self-center text-xl font-mono sm:text-2xl whitespace-nowrap text-white"
+          href="/">Course Project II</a>
+      </div>
+    </div>
+  </div>
 </nav>

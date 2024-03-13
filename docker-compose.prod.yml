@@ -56,7 +56,7 @@ services:
         max_attempts: 5
         window: "30s"
 
-  llm-api:
+  llm-api-service:
     build: llm-api
     image: llm-api
     restart: "no"

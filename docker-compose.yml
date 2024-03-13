@@ -42,7 +42,7 @@ services:
     depends_on:
       - qa-api
 
-  llm-api:
+  llm-api-service:
     build: llm-api
     image: llm-api
     restart: "no"

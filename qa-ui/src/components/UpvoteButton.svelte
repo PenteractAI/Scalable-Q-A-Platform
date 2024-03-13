@@ -31,14 +31,14 @@
 
 <div class="flex font-mono text-xs rounded text-semibold">
     {#if userHasUpvoted}
-        <div class="bg-malachite-400 text-white p-2">Upvoted</div>
+        <div class="bg-malachite-400 text-white py-2 px-6 rounded-l-lg content-center">Upvoted</div>
     {:else}
         <button on:click={upvote}
-                class="bg-cerise-red-400 text-white p-2"
+            class="bg-cerise-red-400 text-white py-2 px-6 rounded-l-lg"
         >Upvote</button>
     {/if}
 
-    <div class="{userHasUpvoted ? 'bg-malachite-100' : 'bg-cerise-red-100'}">
-        <div class="text-gray-700 p-2">{ upvoteCount }</div>
+    <div class="{userHasUpvoted ? 'bg-malachite-100' : 'bg-cerise-red-100'} rounded-r-lg content-center">
+        <div class="text-gray-700 py-2 px-4">{ upvoteCount }</div>
     </div>
 </div>
