@@ -1,5 +1,4 @@
 import http from "k6/http";
-import {group} from 'k6';
 
 export const options = {
     duration: "10s",
