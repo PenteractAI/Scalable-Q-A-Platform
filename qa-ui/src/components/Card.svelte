@@ -5,7 +5,7 @@
     export let post, type;
 </script>
 
-<div class="bg-gradient-to-tr from-white {post.userUuid === 'Doctor Robotnik' ? 'to-blue-100 border-blue-200 shadow-blue-400' : 'to-gray-100 border border-gray-200'} border border-gray-200 shadow overflow-hidden rounded-none md:rounded-lg
+<div data-testid="{type === 'questions' ? 'question' : 'answer'}-card" class="bg-gradient-to-tr from-white {post.userUuid === 'Doctor Robotnik' ? 'to-blue-100 border-blue-200 shadow-blue-400' : 'to-gray-100 border border-gray-200'} border border-gray-200 shadow overflow-hidden rounded-none md:rounded-lg
            {type === 'questions' ? 'hover:border-cerise-red-200 hover:ring-1 hover:ring-cerise-red-600 hover:shadow-cerise-red-500 hover:shadow-inner hover:shadow-lg transition ease-in-out' : ''}">
     <div class="px-8">
         {#if type === 'questions'}

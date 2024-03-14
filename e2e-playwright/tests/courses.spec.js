@@ -17,12 +17,11 @@ test.beforeEach(async ({ page }, testInfo) => {
 });
 
 test("Verifies that courses are recovered and shown on the homepage.", async ({ page }) => {
-  const firstCourseCard = await page.locator('.group').first();
+  const firstCourseCard = await page.getByTestId('course-card').first();
 
   // Check the validity of the first course title
   await expect(firstCourseCard).toContainText(TEST_COURSE_TITLE);
 
   // Check the validity of the first course description
-  const courseDescription = await page.locator(`p:below(:text("${TEST_COURSE_TITLE}"))`);
-  await expect(courseDescription).toContainText(TEST_COURSE_DESCRIPTION);
+  await expect(firstCourseCard).toContainText(TEST_COURSE_DESCRIPTION);
 });

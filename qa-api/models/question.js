@@ -24,7 +24,7 @@ export class Question {
     }
 
     validate() {
-        const MAX_TITLE_LENGTH = 200;
+        const MAX_TITLE_LENGTH = 100;
 
         if(!this.title || this.title.trim() === '') {
             throw new Error('The title field cannot be empty.');

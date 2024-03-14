@@ -8,7 +8,7 @@ CREATE TABLE questions (
     id SERIAL PRIMARY KEY,
     course_id INT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
     user_uuid TEXT NOT NULL,
-    title VARCHAR(200) NULL,
+    title VARCHAR(100) NULL,
     content TEXT NOT NULL,
     creation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     upvote_count INT DEFAULT 0 NOT NULL,
