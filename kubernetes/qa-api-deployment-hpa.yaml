@@ -3,7 +3,7 @@ kind: HorizontalPodAutoscaler
 metadata:
     name: qa-api-deployment-hpa
 spec:
-    maxReplicas: 1 #TODO: PUT 3
+    maxReplicas: 3
     minReplicas: 1
     targetCPUUtilizationPercentage: 10
     scaleTargetRef:

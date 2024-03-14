@@ -13,7 +13,7 @@ Thus, the normalization of the schema is balanced and fit the requirements of th
 
 ### Table course(***id***, title, description)
 Table that contains information about the courses.
-The title and description are mandatory, and the title cannot exceed 200 characters.
+The title and description are mandatory, and the title cannot exceed 100 characters.
 
 ### Table questions(***id***, *course_id*, user_uuid, title, content, creation_time, upvote_count, last_upvote_time)
 Table that contains information about the questions for a course (one-to-many relationship).
@@ -35,8 +35,7 @@ Table that contains upvotes of the users for a specific answer (one-to-many rela
 An answer is linked to a question. If a question is deleted, then corresponding answers are also deleted.
 The  content field is mandatory.
 
-
-
 ## Caching decisions
-
-TODO for merits: Caching decisions are outlined in DATABASE.md.
+Caching with Redis has been implemented in several ways to the application. First, Redis is used to store query results 
+about retrieving results. Store results are flushed when a create or update query is made. A caching mechanism is also
+implemented through nginx to cache static files.

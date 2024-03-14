@@ -40,3 +40,10 @@ On the other hand, Grafana can be accessed using:
 - kubectl port-forward svc/grafana 3000:3000
 
 username: admin, password: admin
+
+## End-to-end tests
+To run end-to-end tests, please use the following command in the e2e-playwright folder:
+- docker compose run --entrypoint=npx e2e-playwright playwright test && docker compose rm -sf
+
+However, it might happen that the tests starts before the application. If this happens, please reuse the above command 
+while the application is running.

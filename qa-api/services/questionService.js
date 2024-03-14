@@ -74,6 +74,13 @@ export const createQuestion = async (courseId, userUuid, title, content) => {
     return newQuestion;
 }
 
+/**
+ * Generates answers by calling the LLM API
+ *
+ * @param questionId
+ * @param title
+ * @returns {Promise<void>}
+ */
 const generateAnswers = async (questionId, title) => {
     const MAX_GENERATED_ANSWERS = 3;
     for (let i = 0; i < MAX_GENERATED_ANSWERS; i++) {
